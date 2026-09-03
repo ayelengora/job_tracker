@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
+import './kanban.css'
 
 const STATUSES = ['interested', 'applied', 'interviewing', 'offer', 'hired', 'rejected']
 
@@ -23,12 +24,12 @@ function KanbanBoard() {
   const grouped = groupByStatus(jobApplications)
 
   return (
-    <div style={{ display: 'flex', gap: '16px' }}>
+    <div className="board">
       {STATUSES.map(status => (
-        <div key={status}>
-          <h2>{status}</h2>
+        <div key={status} className="column">
+          <h2 className="column-title">{status}</h2>
           {grouped[status].map(app => (
-            <p key={app.id}>{app.company} - {app.position}</p>
+            <div key={app.id} className="card">{app.company} - {app.position}</div>
           ))}
         </div>
       ))}
