@@ -1,19 +1,40 @@
 import React, { useState, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 
-function Saludo() {
-  // 1. acá el useState: la variable que va a guardar jobApplications
+const STATUSES = ['interested', 'applied', 'interviewing', 'offer', 'hired', 'rejected']
+
+function groupByStatus(applications) {
+  const grouped = {}
+  STATUSES.forEach(status => {
+    grouped[status] = applications.filter(app => app.status === status)
+  })
+  return grouped
+}
+
+function KanbanBoard() {
   const [jobApplications, setJobApplications] = useState([])
-  // 2. acá el useEffect, con el fetch adentro
+
   useEffect(() => {
-  fetch('/job_applications.json')
-    .then(response => response.json())
-    .then(data => setJobApplications(data))
+    fetch('/job_applications.json')
+      .then(response => response.json())
+      .then(data => setJobApplications(data))
   }, [])
-  // 3. acá el console.log(jobApplications), antes del return
-  console.log(jobApplications)
-    return <h1>¡Hola, mundo!</h1>;
-  }
+
+  const grouped = groupByStatus(jobApplications)
+
+  return (
+    <div style={{ display: 'flex', gap: '16px' }}>
+      {STATUSES.map(status => (
+        <div key={status}>
+          <h2>{status}</h2>
+          {grouped[status].map(app => (
+            <p key={app.id}>{app.company} - {app.position}</p>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
 
 const root = document.getElementById('kanban-root')
-createRoot(root).render(<Saludo />)
+createRoot(root).render(<KanbanBoard />)
