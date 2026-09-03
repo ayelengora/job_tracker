@@ -1,6 +1,19 @@
 class JobApplicationsController < ApplicationController
   before_action :set_job_application, only: [:edit, :update, :destroy]
   
+  def index
+    @job_applications = JobApplication.all
+  
+    respond_to do |format|
+      format.html
+      format.json { render json: @job_applications }
+    end
+  end
+  
+  def new
+    @job_application = JobApplication.new
+  end
+
   def create
     @job_application = JobApplication.new(job_application_params)
     if @job_application.save
@@ -8,14 +21,6 @@ class JobApplicationsController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
-  end
-
-  def index
-    @job_applications = JobApplication.all
-  end
-
-  def new
-    @job_application = JobApplication.new
   end
 
   def edit
