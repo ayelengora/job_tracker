@@ -11,6 +11,10 @@
   min-width: 220px;
 }
 
+.column.column-over {
+  background: #e0ecff;
+}
+
 .column-title {
   text-transform: capitalize;
   font-size: 14px;
@@ -24,4 +28,13 @@
   padding: 10px;
   margin-bottom: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  cursor: grab;
+  touch-action: none;
+  position: relative;
+  z-index: 1;
+}
+
+.card:active {
+  cursor: grabbing;
+  z-index: 2;
 }

@@ -27,10 +27,14 @@ class JobApplicationsController < ApplicationController
   end
 
   def update
-    if @job_application.update(job_application_params)
-      redirect_to job_applications_path, notice: 'Job application was successfully updated.'
-    else
-      render :edit, status: :unprocessable_entity
+    respond_to do |format|
+      if @job_application.update(job_application_params)
+        format.html { redirect_to job_applications_path, notice: 'Job application was successfully updated.' }
+        format.json { render json: @job_application }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @job_application.errors, status: :unprocessable_entity }
+      end
     end
   end
 
