@@ -1,5 +1,6 @@
 import React from 'react'
 import { useDraggable } from '@dnd-kit/core'
+import { STATUS_STYLES } from './statusStyles.js'
 
 function Card({ jobApplication }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -7,29 +8,40 @@ function Card({ jobApplication }) {
   })
 
   const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-        opacity: isDragging ? 0.5 : 1,
-      }
+    ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` }
     : undefined
+
+  const styles = STATUS_STYLES[jobApplication.status] ?? STATUS_STYLES.interested
 
   return (
     <div
-      className="card"
       ref={setNodeRef}
       style={style}
       {...listeners}
       {...attributes}
+      className={`relative mb-3 cursor-grab touch-none rounded-lg border-l-4 bg-white p-3 shadow-sm transition-shadow active:cursor-grabbing active:shadow-md ${styles.card} ${
+        isDragging ? 'opacity-50' : 'opacity-100'
+      }`}
     >
-      <div className="card-title">{ jobApplication.company}</div>
-      <div>{jobApplication.position}</div>
-      <div className="card-meta">
-        <span>{jobApplication.interest_level}</span>
+      <div className="font-semibold text-neutral-800">{jobApplication.company}</div>
+      <div className="text-sm text-neutral-600">{jobApplication.position}</div>
+      <div className="mt-2 flex items-center justify-between text-xs text-neutral-500">
+        <span className="inline-flex items-center gap-1">
+          <span className={`h-1.5 w-1.5 rounded-full ${styles.dot}`} />
+          {jobApplication.interest_level}
+        </span>
         <span>{jobApplication.applied_on}</span>
       </div>
-      {jobApplication.job_url && <a href={jobApplication.job_url}>Ver aviso</a>}
+      {jobApplication.job_url && (
+        <a
+          href={jobApplication.job_url}
+          className="mt-2 inline-block text-xs font-medium text-blue-600 hover:underline"
+        >
+          Ver aviso
+        </a>
+      )}
     </div>
-  )  // acá "app" ya está disponible, extraído directo del objeto de props
+  )
 }
 
 export default Card

@@ -78,13 +78,16 @@ function KanbanBoard() {
   }
 
   return (
-    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <div className="board">
-        {STATUSES.map(status => (
-          <Column key={status} status={status} jobApplications={grouped[status]} />
-        ))}
-      </div>
-    </DndContext>
+    <div className="flex h-screen flex-col bg-neutral-100">
+      <h1 className="px-6 pb-4 pt-6 text-xl font-bold text-neutral-800">Job Tracker</h1>
+      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+        <div className="flex flex-1 items-stretch gap-4 overflow-x-auto px-6 pb-6">
+          {STATUSES.map(status => (
+            <Column key={status} status={status} jobApplications={grouped[status]} />
+          ))}
+        </div>
+      </DndContext>
+    </div>
   )
 }
 
