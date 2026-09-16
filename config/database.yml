@@ -81,18 +81,13 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: job_tracker_production
-    username: job_tracker
-    password: <%= ENV["JOB_TRACKER_DATABASE_PASSWORD"] %>
+    url: <%= ENV["DATABASE_URL"] %>
   cache:
     <<: *primary_production
-    database: job_tracker_production_cache
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
-    database: job_tracker_production_queue
     migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
-    database: job_tracker_production_cable
     migrations_paths: db/cable_migrate

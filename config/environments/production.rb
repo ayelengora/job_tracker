@@ -87,4 +87,8 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  # Render assigns a public *.onrender.com hostname at deploy time; allow it explicitly
+  # so Rails' Host Authorization middleware doesn't reject every request with 403 Blocked host.
+  config.hosts << ENV["RENDER_EXTERNAL_HOSTNAME"] if ENV["RENDER_EXTERNAL_HOSTNAME"]
 end
