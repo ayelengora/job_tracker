@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
-import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import Column from '../components/Column.jsx'
+import { CardPreview } from '../components/Card.jsx'
 import JobApplicationModal from '../components/JobApplicationModal.jsx'
 import Logo from '../components/Logo.jsx'
 
@@ -38,6 +39,7 @@ function KanbanBoard() {
   const [jobApplications, setJobApplications] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingJobApplication, setEditingJobApplication] = useState(null)
+  const [activeId, setActiveId] = useState(null)
 
   useEffect(() => {
     fetch('/job_applications.json')
@@ -53,8 +55,14 @@ function KanbanBoard() {
   )
 
   const grouped = groupByStatus(jobApplications)
+  const activeJobApplication = jobApplications.find(app => app.id === activeId) ?? null
+
+  function handleDragStart(event) {
+    setActiveId(event.active.id)
+  }
 
   function handleDragEnd(event) {
+    setActiveId(null)
     const { active, over } = event
     if (!over) return
 
@@ -127,7 +135,12 @@ function KanbanBoard() {
           </button>
         </div>
       </div>
-      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragCancel={() => setActiveId(null)}
+      >
         <div className="flex flex-1 items-stretch gap-4 overflow-x-auto px-6 pb-6">
           {STATUSES.map(status => (
             <Column
@@ -138,6 +151,9 @@ function KanbanBoard() {
             />
           ))}
         </div>
+        <DragOverlay>
+          {activeJobApplication ? <CardPreview jobApplication={activeJobApplication} /> : null}
+        </DragOverlay>
       </DndContext>
       {isModalOpen && (
         <JobApplicationModal
