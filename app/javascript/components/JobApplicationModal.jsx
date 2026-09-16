@@ -47,7 +47,7 @@ const inputClass =
   'mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400'
 const labelClass = 'block text-sm font-medium text-neutral-700'
 
-function JobApplicationModal({ jobApplication, onClose, onSaved }) {
+function JobApplicationModal({ jobApplication, onClose, onSaved, onDeleted }) {
   const isEditing = Boolean(jobApplication)
   const [form, setForm] = useState(() => toFormState(jobApplication))
   const [errors, setErrors] = useState([])
@@ -68,6 +68,31 @@ function JobApplicationModal({ jobApplication, onClose, onSaved }) {
 
   function handleChange(field) {
     return event => setForm(prev => ({ ...prev, [field]: event.target.value }))
+  }
+
+  function handleDelete() {
+    if (!jobApplication) return
+    const confirmed = window.confirm(
+      `¿Eliminar la postulación a ${jobApplication.company}? Esta acción no se puede deshacer.`
+    )
+    if (!confirmed) return
+
+    setSaving(true)
+    setErrors([])
+
+    fetch(`/job_applications/${jobApplication.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'X-CSRF-Token': getCsrfToken(),
+      },
+    })
+      .then(response => {
+        if (!response.ok) throw new Error(`No se pudo eliminar (status ${response.status})`)
+        onDeleted(jobApplication.id)
+      })
+      .catch(() => setErrors(['No se pudo eliminar la postulación']))
+      .finally(() => setSaving(false))
   }
 
   function handleSubmit(event) {
@@ -201,17 +226,29 @@ function JobApplicationModal({ jobApplication, onClose, onSaved }) {
             <textarea rows={3} value={form.notes} onChange={handleChange('notes')} className={inputClass} />
           </div>
 
-          <div className="flex items-center gap-3 pt-2">
-            <button
-              type="submit"
-              disabled={saving}
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
-            >
-              {saving ? 'Guardando...' : 'Guardar'}
-            </button>
-            <button type="button" onClick={onClose} className="text-sm text-neutral-600 hover:underline">
-              Cancelar
-            </button>
+          <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center gap-3">
+              <button
+                type="submit"
+                disabled={saving}
+                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+              >
+                {saving ? 'Guardando...' : 'Guardar'}
+              </button>
+              <button type="button" onClick={onClose} className="text-sm text-neutral-600 hover:underline">
+                Cancelar
+              </button>
+            </div>
+            {isEditing && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={saving}
+                className="text-sm font-medium text-rose-600 hover:underline disabled:opacity-60"
+              >
+                Eliminar
+              </button>
+            )}
           </div>
         </form>
       </div>

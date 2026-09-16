@@ -9,6 +9,7 @@ RSpec.describe JobApplication, type: :model do
       job_application.applied_on = Date.today
       expect(job_application).to be_valid
     end
+
     it "should not be valid without a company name" do
       job_application = JobApplication.new
       job_application.position = "Software Engineer"
@@ -30,6 +31,30 @@ RSpec.describe JobApplication, type: :model do
       expect(job_application).to be_invalid
     end
 
+    it "should not be valid without a status" do
+      job_application = JobApplication.new(
+        company: "Test Company", position: "Software Engineer", applied_on: Date.today, status: nil
+      )
+      expect(job_application).to be_invalid
+    end
+
+    it "should not be valid without an interest_level" do
+      job_application = JobApplication.new(
+        company: "Test Company", position: "Software Engineer", applied_on: Date.today, interest_level: nil
+      )
+      expect(job_application).to be_invalid
+    end
+
+    it "rejects a status outside the enum" do
+      job_application = JobApplication.new(company: "Test Company", position: "Software Engineer", applied_on: Date.today)
+      expect { job_application.status = "ghosted" }.to raise_error(ArgumentError)
+    end
+
+    it "rejects an interest_level outside the enum" do
+      job_application = JobApplication.new(company: "Test Company", position: "Software Engineer", applied_on: Date.today)
+      expect { job_application.interest_level = "urgent" }.to raise_error(ArgumentError)
+    end
+
     it "defaults status to interested" do
       job_application = JobApplication.new
       expect(job_application.status).to eq("interested")
@@ -38,6 +63,18 @@ RSpec.describe JobApplication, type: :model do
     it "interest_level should be medium by default" do
       job_application = JobApplication.new
       expect(job_application.interest_level).to eq("medium")
-    end 
+    end
+  end
+
+  describe "enums" do
+    it "exposes the expected statuses in order" do
+      expect(JobApplication.statuses.keys).to eq(
+        %w[interested applied interviewing offer hired rejected]
+      )
+    end
+
+    it "exposes the expected interest levels in order" do
+      expect(JobApplication.interest_levels.keys).to eq(%w[low medium high])
+    end
   end
 end

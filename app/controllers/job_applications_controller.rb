@@ -44,7 +44,10 @@ class JobApplicationsController < ApplicationController
 
   def destroy
     @job_application.destroy
-    redirect_to job_applications_path, notice: 'Job application was successfully deleted.'
+    respond_to do |format|
+      format.html { redirect_to job_applications_path, notice: 'Job application was successfully deleted.' }
+      format.json { head :no_content }
+    end
   end
 
   private

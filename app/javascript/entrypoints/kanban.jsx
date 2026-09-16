@@ -101,6 +101,11 @@ function KanbanBoard() {
     setIsModalOpen(false)
   }
 
+  function handleDeleted(id) {
+    setJobApplications(prev => prev.filter(app => app.id !== id))
+    setIsModalOpen(false)
+  }
+
   return (
     <div className="flex h-screen flex-col bg-neutral-100">
       <div className="flex items-center justify-between px-6 pb-4 pt-6">
@@ -130,6 +135,7 @@ function KanbanBoard() {
           jobApplication={editingJobApplication}
           onClose={closeModal}
           onSaved={handleSaved}
+          onDeleted={handleDeleted}
         />
       )}
     </div>
