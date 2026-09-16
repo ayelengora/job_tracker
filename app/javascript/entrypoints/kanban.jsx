@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import Column from '../components/Column.jsx'
-import './kanban.css'
+import JobApplicationModal from '../components/JobApplicationModal.jsx'
 
 const STATUSES = ['interested', 'applied', 'interviewing', 'offer', 'hired', 'rejected']
 
@@ -35,6 +35,8 @@ function updateStatus(id, status) {
 
 function KanbanBoard() {
   const [jobApplications, setJobApplications] = useState([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingJobApplication, setEditingJobApplication] = useState(null)
 
   useEffect(() => {
     fetch('/job_applications.json')
@@ -42,7 +44,7 @@ function KanbanBoard() {
       .then(data => setJobApplications(data))
   }, [])
 
-  // distance: 8 evita que un simple click (por ej. en "Ver aviso") dispare un drag
+  // distance: 8 evita que un simple click (por ej. en "Ver aviso" o "Editar") dispare un drag
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
@@ -77,16 +79,59 @@ function KanbanBoard() {
     })
   }
 
+  function openNewModal() {
+    setEditingJobApplication(null)
+    setIsModalOpen(true)
+  }
+
+  function openEditModal(jobApplication) {
+    setEditingJobApplication(jobApplication)
+    setIsModalOpen(true)
+  }
+
+  function closeModal() {
+    setIsModalOpen(false)
+  }
+
+  function handleSaved(saved) {
+    setJobApplications(prev => {
+      const exists = prev.some(app => app.id === saved.id)
+      return exists ? prev.map(app => (app.id === saved.id ? saved : app)) : [...prev, saved]
+    })
+    setIsModalOpen(false)
+  }
+
   return (
     <div className="flex h-screen flex-col bg-neutral-100">
-      <h1 className="px-6 pb-4 pt-6 text-xl font-bold text-neutral-800">Job Tracker</h1>
+      <div className="flex items-center justify-between px-6 pb-4 pt-6">
+        <h1 className="text-xl font-bold text-neutral-800">Job Tracker</h1>
+        <button
+          type="button"
+          onClick={openNewModal}
+          className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+        >
+          + Nueva postulación
+        </button>
+      </div>
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
         <div className="flex flex-1 items-stretch gap-4 overflow-x-auto px-6 pb-6">
           {STATUSES.map(status => (
-            <Column key={status} status={status} jobApplications={grouped[status]} />
+            <Column
+              key={status}
+              status={status}
+              jobApplications={grouped[status]}
+              onEditCard={openEditModal}
+            />
           ))}
         </div>
       </DndContext>
+      {isModalOpen && (
+        <JobApplicationModal
+          jobApplication={editingJobApplication}
+          onClose={closeModal}
+          onSaved={handleSaved}
+        />
+      )}
     </div>
   )
 }

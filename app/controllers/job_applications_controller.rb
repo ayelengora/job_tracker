@@ -16,10 +16,14 @@ class JobApplicationsController < ApplicationController
 
   def create
     @job_application = JobApplication.new(job_application_params)
-    if @job_application.save
-      redirect_to job_applications_path, notice: 'Job application was successfully created.'
-    else
-      render :new, status: :unprocessable_entity
+    respond_to do |format|
+      if @job_application.save
+        format.html { redirect_to job_applications_path, notice: 'Job application was successfully created.' }
+        format.json { render json: @job_application, status: :created }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @job_application.errors, status: :unprocessable_entity }
+      end
     end
   end
 

@@ -3,7 +3,7 @@ import { useDroppable } from '@dnd-kit/core'
 import Card from './Card.jsx'
 import { STATUS_STYLES } from './statusStyles.js'
 
-function Column({ status, jobApplications }) {
+function Column({ status, jobApplications, onEditCard }) {
   const { setNodeRef, isOver } = useDroppable({ id: status })
   const styles = STATUS_STYLES[status] ?? STATUS_STYLES.interested
 
@@ -22,7 +22,7 @@ function Column({ status, jobApplications }) {
       </div>
       <div className="flex-1 overflow-y-auto pr-1">
         {jobApplications.map(app => (
-          <Card key={app.id} jobApplication={app} />
+          <Card key={app.id} jobApplication={app} onEdit={onEditCard} />
         ))}
       </div>
     </div>

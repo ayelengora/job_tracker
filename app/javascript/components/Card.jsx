@@ -2,7 +2,7 @@ import React from 'react'
 import { useDraggable } from '@dnd-kit/core'
 import { STATUS_STYLES } from './statusStyles.js'
 
-function Card({ jobApplication }) {
+function Card({ jobApplication, onEdit }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: jobApplication.id,
   })
@@ -32,14 +32,20 @@ function Card({ jobApplication }) {
         </span>
         <span>{jobApplication.applied_on}</span>
       </div>
-      {jobApplication.job_url && (
-        <a
-          href={jobApplication.job_url}
-          className="mt-2 inline-block text-xs font-medium text-blue-600 hover:underline"
+      <div className="mt-2 flex items-center gap-3 text-xs">
+        {jobApplication.job_url && (
+          <a href={jobApplication.job_url} className="font-medium text-blue-600 hover:underline">
+            Ver aviso
+          </a>
+        )}
+        <button
+          type="button"
+          onClick={() => onEdit(jobApplication)}
+          className="font-medium text-neutral-500 hover:underline"
         >
-          Ver aviso
-        </a>
-      )}
+          Editar
+        </button>
+      </div>
     </div>
   )
 }
