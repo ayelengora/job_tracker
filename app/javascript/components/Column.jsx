@@ -21,9 +21,15 @@ function Column({ status, jobApplications, onEditCard }) {
         </span>
       </div>
       <div className="flex-1 overflow-y-auto pr-1">
-        {jobApplications.map(app => (
-          <Card key={app.id} jobApplication={app} onEdit={onEditCard} />
-        ))}
+        {jobApplications.length === 0 ? (
+          <div className="flex h-24 items-center justify-center rounded-lg border-2 border-dashed border-neutral-200 text-xs text-neutral-400">
+            Sin postulaciones
+          </div>
+        ) : (
+          jobApplications.map(app => (
+            <Card key={app.id} jobApplication={app} onEdit={onEditCard} />
+          ))
+        )}
       </div>
     </div>
   )
