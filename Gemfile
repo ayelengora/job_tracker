@@ -39,6 +39,11 @@ gem "kamal", require: false
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
 
+# Vite integration: needed in every environment, not just development, since
+# production also uses its view helpers (vite_javascript_tag, etc.) to
+# reference the already-built assets.
+gem "vite_rails"
+
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
@@ -54,9 +59,6 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
-
-  # Use Capybara for integration testing [
-  gem "vite_rails"
 end
 
 group :development do
