@@ -37,6 +37,7 @@ function updateStatus(id, status) {
 
 function KanbanBoard() {
   const [jobApplications, setJobApplications] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingJobApplication, setEditingJobApplication] = useState(null)
   const [activeId, setActiveId] = useState(null)
@@ -45,6 +46,7 @@ function KanbanBoard() {
     fetch('/job_applications.json')
       .then(response => response.json())
       .then(data => setJobApplications(data))
+      .finally(() => setIsLoading(false))
   }, [])
 
   // distance: 8 evita que un simple click (por ej. en "Ver aviso" o "Editar") dispare un drag
@@ -115,6 +117,13 @@ function KanbanBoard() {
     setIsModalOpen(false)
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-neutral-100">
+        <span className="text-sm text-neutral-400">Cargando...</span>
+      </div>
+    )
+  }
   return (
     <div className="flex h-screen flex-col bg-neutral-100">
       <div className="flex items-center justify-between border-b border-neutral-200 bg-white px-6 py-4">
