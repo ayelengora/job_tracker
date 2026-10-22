@@ -44,10 +44,19 @@ gem "thruster", require: false
 # reference the already-built assets.
 gem "vite_rails"
 
+# Google login (OmniAuth). No passwords to manage: everyone signs in with
+# their own Google account and gets their own private board.
+gem "omniauth-google-oauth2"
+# Protects the /auth/:provider request against CSRF (required by OmniAuth >= 2).
+gem "omniauth-rails_csrf_protection"
+
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
 group :development, :test do
+  # Load GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET from a local .env file (gitignored).
+  gem "dotenv-rails"
+
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 

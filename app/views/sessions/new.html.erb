@@ -1,0 +1,17 @@
+<div class="flex h-screen items-center justify-center bg-neutral-100">
+  <div class="w-full max-w-sm rounded-xl bg-white p-8 text-center shadow">
+    <h1 class="mb-2 text-xl font-semibold text-neutral-900">Job Tracker</h1>
+    <p class="mb-6 text-sm text-neutral-500">Inicia sesion para ver tu tablero.</p>
+
+    <% if notice %>
+      <p class="mb-4 text-sm text-green-600"><%= notice %></p>
+    <% end %>
+    <% if alert %>
+      <p class="mb-4 text-sm text-red-600"><%= alert %></p>
+    <% end %>
+
+    <%= button_to "Continuar con Google", "/auth/google_oauth2",
+          data: { turbo: false },
+          class: "flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-blue-700" %>
+  </div>
+</div>

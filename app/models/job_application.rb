@@ -1,4 +1,6 @@
 class JobApplication < ApplicationRecord
+  belongs_to :user
+
   enum :status, { interested: 0, applied: 1, interviewing: 2, offer: 3, hired: 4, rejected: 5 }
   enum :interest_level, { low: 0, medium: 1, high: 2 }
 

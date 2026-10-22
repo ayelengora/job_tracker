@@ -1,21 +1,21 @@
 class JobApplicationsController < ApplicationController
   before_action :set_job_application, only: [:edit, :update, :destroy]
-  
+
   def index
-    @job_applications = JobApplication.all
-  
+    @job_applications = current_user.job_applications
+
     respond_to do |format|
       format.html
       format.json { render json: @job_applications }
     end
   end
-  
+
   def new
-    @job_application = JobApplication.new
+    @job_application = current_user.job_applications.build
   end
 
   def create
-    @job_application = JobApplication.new(job_application_params)
+    @job_application = current_user.job_applications.build(job_application_params)
     respond_to do |format|
       if @job_application.save
         format.html { redirect_to job_applications_path, notice: 'Job application was successfully created.' }
@@ -56,7 +56,9 @@ class JobApplicationsController < ApplicationController
       params.require(:job_application).permit(:company, :position, :applied_on, :status, :interest_level, :notes, :job_url, :interview_round, :last_contacted_on)
   end
 
+  # Scoped to current_user: looking up someone else's id here raises
+  # ActiveRecord::RecordNotFound (404), same as a nonexistent id.
   def set_job_application
-    @job_application = JobApplication.find(params[:id])
+    @job_application = current_user.job_applications.find(params[:id])
   end
 end

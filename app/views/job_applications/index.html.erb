@@ -1,2 +1,6 @@
+<div class="flex items-center justify-end gap-3 bg-neutral-900 px-4 py-1.5 text-xs text-neutral-300">
+  <span><%= current_user.email %></span>
+  <%= button_to "Cerrar sesion", logout_path, method: :delete, data: { turbo: false }, class: "text-neutral-300 underline hover:text-white" %>
+</div>
 <div id="kanban-root"></div>
 <%= vite_javascript_tag 'kanban.jsx' %>
