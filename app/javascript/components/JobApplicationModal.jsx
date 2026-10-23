@@ -218,7 +218,7 @@ function JobApplicationModal({ jobApplication, onClose, onSaved, onDeleted }) {
 
           <div>
             <label className={labelClass}>Link del aviso</label>
-            <input type="url" value={form.job_url} onChange={handleChange('job_url')} className={inputClass} />
+            <input type="text" value={form.job_url} onChange={handleChange('job_url')} className={inputClass} inputMode="url" />
           </div>
 
           <div>
