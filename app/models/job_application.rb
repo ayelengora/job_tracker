@@ -17,6 +17,7 @@ class JobApplication < ApplicationRecord
   validates :status, presence: true
   validates :interest_level, presence: true
   validate :job_url_must_look_like_a_website
+  validate :last_contacted_cannot_be_before_applied
 
   private
 
@@ -27,5 +28,13 @@ class JobApplication < ApplicationRecord
     errors.add(:job_url, "no parece una dirección web") unless host&.include?(".")
   rescue URI::InvalidURIError
     errors.add(:job_url, "no parece una dirección web")
+  end
+
+  def last_contacted_cannot_be_before_applied
+    return if last_contacted_on.blank? || applied_on.blank?
+
+    if last_contacted_on < applied_on
+      errors.add(:last_contacted_on, "no puede ser anterior a la fecha de postulación")
+    end
   end
 end
