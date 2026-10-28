@@ -1,13 +1,22 @@
 require 'rails_helper'
 
 RSpec.describe JobApplication, type: :model do
+  let(:user) { User.create!(email: "test@example.com", provider: "google_oauth2", uid: "123") }
+
   describe "validations" do
     it "should have a company name, a position and an application date" do
       job_application = JobApplication.new
+      job_application.user = user
       job_application.company = "Test Company"
       job_application.position = "Software Engineer"
       job_application.applied_on = Date.today
       expect(job_application).to be_valid
+    end
+
+    it "should not be valid without a user" do
+      job_application = JobApplication.new(company: "Test Company", position: "Software Engineer", applied_on: Date.today)
+      expect(job_application).to be_invalid
+      expect(job_application.errors[:user]).to be_present
     end
 
     it "should not be valid without a company name" do

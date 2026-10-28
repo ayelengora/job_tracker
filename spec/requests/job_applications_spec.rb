@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "JobApplications", type: :request do
+  let(:user) { User.create!(email: "test@example.com", provider: "google_oauth2", uid: "123") }
   let(:valid_attributes) do
     {
       company: "Mercado Libre",
@@ -15,7 +16,42 @@ RSpec.describe "JobApplications", type: :request do
     { company: "", position: "", applied_on: nil }
   end
 
-  let!(:job_application) { JobApplication.create!(valid_attributes) }
+  let!(:job_application) { user.job_applications.create!(valid_attributes) }
+
+  before { sign_in(user) }
+
+  describe "when logged out" do
+    it "redirects to the login page" do
+      delete logout_path
+      get job_applications_path
+      expect(response).to redirect_to(login_path)
+    end
+  end
+
+  describe "another user's applications" do
+    let(:other_user) { User.create!(email: "other@example.com", provider: "google_oauth2", uid: "456") }
+    let!(:other_application) do
+      other_user.job_applications.create!(valid_attributes.merge(company: "Secret Corp"))
+    end
+
+    it "are not included in the board" do
+      get job_applications_path(format: :json)
+      companies = JSON.parse(response.body).map { |app| app["company"] }
+      expect(companies).not_to include("Secret Corp")
+    end
+
+    it "can't be updated (404, same as an id that doesn't exist)" do
+      patch job_application_path(other_application), params: { job_application: { company: "Hacked" } }
+      expect(response).to have_http_status(:not_found)
+      expect(other_application.reload.company).to eq("Secret Corp")
+    end
+
+    it "can't be deleted" do
+      delete job_application_path(other_application)
+      expect(response).to have_http_status(:not_found)
+      expect(JobApplication.exists?(other_application.id)).to be true
+    end
+  end
 
   describe "GET /job_applications" do
     it "renders the board" do
@@ -53,6 +89,12 @@ RSpec.describe "JobApplications", type: :request do
         expect {
           post job_applications_path, params: { job_application: valid_attributes }
         }.to change(JobApplication, :count).by(1)
+      end
+
+      it "assigns the new application to the logged-in user, ignoring any user_id in the params" do
+        other_user = User.create!(email: "other@example.com", provider: "google_oauth2", uid: "456")
+        post job_applications_path, params: { job_application: valid_attributes.merge(user_id: other_user.id) }
+        expect(JobApplication.last.user).to eq(user)
       end
 
       it "redirects to the board (html)" do
